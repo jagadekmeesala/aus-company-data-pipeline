@@ -74,7 +74,6 @@ ALTER TABLE abr_data RENAME TO abr_data_backup;
 - Valid matches are inserted into the company_match table.
 
 ## Technology Stack Justification
-Technology	Purpose
 - Python	- Orchestrating the pipeline and data processing
 - pandas	- Efficient in-memory data manipulation and filtering
 - SQLAlchemy	- ORM and connection layer to interact with PostgreSQL
