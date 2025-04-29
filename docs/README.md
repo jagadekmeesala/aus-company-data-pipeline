@@ -40,9 +40,10 @@ CREATE TABLE company_match (
 
 -- Backup of ABR data (optional)
 ALTER TABLE abr_data RENAME TO abr_data_backup;
-
+```
 
 ## Pipeline Design
+```
 +--------------------+         +-----------------+         +--------------------+
 |  company_websites  |         |     abr_data    |         |  abr_data_backup   |
 |  (PostgreSQL)      |         |  (PostgreSQL)   |         |  (PostgreSQL)      |
@@ -64,3 +65,49 @@ ALTER TABLE abr_data RENAME TO abr_data_backup;
              |  company_match Table |
              |   (Fuzzy Matches)    |
              +----------------------+
+```
+
+## Description:
+- Data is loaded from company_websites and abr_data.
+- Fuzzy matching is performed using RapidFuzz (token_sort_ratio) with a threshold.
+- Matches are validated against a backup table (abr_data_backup) to ensure abr_id integrity.
+- Valid matches are inserted into the company_match table.
+
+## Technology Stack Justification
+Technology	Purpose
+Python	- Orchestrating the pipeline and data processing
+pandas	- Efficient in-memory data manipulation and filtering
+SQLAlchemy	- ORM and connection layer to interact with PostgreSQL
+RapidFuzz	- Fast and accurate fuzzy string matching with low memory overhead
+PostgreSQL	- Relational database to store scraped data and match results
+
+## Setup & Running Instructions
+1. Install Dependencies
+
+``` pip install pandas sqlalchemy psycopg2-binary rapidfuzz ```
+
+2. Configure Database
+Make sure PostgreSQL is running and create a database called company_info. Update the database credentials in your script:
+```
+DB_USER = 'postgres'
+DB_PASSWORD = 'root'
+DB_HOST = 'localhost'
+DB_PORT = '5432'
+DB_NAME = 'company_info'
+```
+
+3. Create Tables
+Run the SQL in the Database Schema section to create all necessary tables in your PostgreSQL DB.
+
+4. Load Your Data
+Insert data into company_websites and abr_data.
+Optionally, back up abr_data by renaming it to abr_data_backup before re-importing simplified data.
+
+5. Run the Pipeline
+``` python pipeline.py ```
+
+The script will:
+- Fetch data from PostgreSQL,
+- Perform fuzzy matching,
+- Validate abr_id against the backup,
+- Insert valid matches into company_match.
