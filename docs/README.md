@@ -42,6 +42,10 @@ CREATE TABLE company_match (
 ALTER TABLE abr_data RENAME TO abr_data_backup;
 ```
 
+
+![image](https://github.com/user-attachments/assets/812602a5-a2d6-4f80-9736-49d014538636)
+
+
 ## Pipeline Design
 ```
 +--------------------+         +-----------------+         +--------------------+
