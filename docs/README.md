@@ -75,11 +75,11 @@ ALTER TABLE abr_data RENAME TO abr_data_backup;
 
 ## Technology Stack Justification
 Technology	Purpose
-Python	- Orchestrating the pipeline and data processing
-pandas	- Efficient in-memory data manipulation and filtering
-SQLAlchemy	- ORM and connection layer to interact with PostgreSQL
-RapidFuzz	- Fast and accurate fuzzy string matching with low memory overhead
-PostgreSQL	- Relational database to store scraped data and match results
+- Python	- Orchestrating the pipeline and data processing
+- pandas	- Efficient in-memory data manipulation and filtering
+- SQLAlchemy	- ORM and connection layer to interact with PostgreSQL
+- RapidFuzz	- Fast and accurate fuzzy string matching with low memory overhead
+- PostgreSQL	- Relational database to store scraped data and match results
 
 ## Setup & Running Instructions
 1. Install Dependencies
