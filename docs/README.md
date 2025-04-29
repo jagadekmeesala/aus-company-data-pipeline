@@ -42,6 +42,8 @@ CREATE TABLE company_match (
 ALTER TABLE abr_data RENAME TO abr_data_backup;
 ```
 
+---
+
 ### Entity Relationship Diagram
 ![image](https://github.com/user-attachments/assets/812602a5-a2d6-4f80-9736-49d014538636)
 
@@ -77,12 +79,16 @@ ALTER TABLE abr_data RENAME TO abr_data_backup;
 - Matches are validated against a backup table (abr_data_backup) to ensure abr_id integrity.
 - Valid matches are inserted into the company_match table.
 
+---
+
 ## Technology Stack Justification
 - Python	- Orchestrating the pipeline and data processing
 - pandas	- Efficient in-memory data manipulation and filtering
 - SQLAlchemy	- ORM and connection layer to interact with PostgreSQL
 - RapidFuzz	- Fast and accurate fuzzy string matching with low memory overhead
 - PostgreSQL	- Relational database to store scraped data and match results
+
+---
 
 ## Setup & Running Instructions
 1. Install Dependencies
@@ -114,3 +120,44 @@ The script will:
 - Perform fuzzy matching,
 - Validate abr_id against the backup,
 - Insert valid matches into company_match.
+
+## 2. Code Implementation
+
+---
+
+### DBT Transformation Logic 
+
+```sql
+-- models/cleaned_abr_data.sql
+SELECT
+  id,
+  abn,
+  UPPER(TRIM(entity_name)) AS entity_name_clean,
+  entity_type,
+  entity_status,
+  state,
+  extracted_at
+FROM {{ source('public', 'abr_data') }}
+WHERE abn IS NOT NULL;
+
+-- models/cleaned_websites.sql
+SELECT
+  id,
+  url,
+  UPPER(TRIM(company_name)) AS company_name_clean,
+  industry,
+  extracted_at
+FROM {{ source('public', 'company_websites') }}
+WHERE company_name IS NOT NULL;
+
+-- models/matched_companies.sql
+SELECT
+  cm.website_id,
+  w.company_name_clean AS website_name,
+  a.entity_name_clean AS matched_entity,
+  cm.match_score,
+  cm.matched_at
+FROM {{ ref('company_match') }} cm
+JOIN {{ ref('cleaned_abr_data') }} a ON cm.abr_id = a.id
+JOIN {{ ref('cleaned_websites') }} w ON cm.website_id = w.id
+WHERE cm.match_score > 80;
