@@ -40,3 +40,27 @@ CREATE TABLE company_match (
 
 -- Backup of ABR data (optional)
 ALTER TABLE abr_data RENAME TO abr_data_backup;
+
+
+## Pipeline Design
++--------------------+         +-----------------+         +--------------------+
+|  company_websites  |         |     abr_data    |         |  abr_data_backup   |
+|  (PostgreSQL)      |         |  (PostgreSQL)   |         |  (PostgreSQL)      |
++--------------------+         +-----------------+         +--------------------+
+         |                             |                             |
+         |                             |                             |
+         +-------------+---------------+                             |
+                       |                                             |
+                       v                                             v
+             +---------------------+                         +--------------------+
+             |   Python Script     |                         |   Validation Step  |
+             | - pandas            |<------------------------| (Filter abr_id only |
+             | - sqlalchemy        |                         |   in abr_data_backup)|
+             | - rapidfuzz         |                         +--------------------+
+             +---------------------+
+                       |
+                       v
+             +----------------------+
+             |  company_match Table |
+             |   (Fuzzy Matches)    |
+             +----------------------+
