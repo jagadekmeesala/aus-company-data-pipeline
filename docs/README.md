@@ -227,3 +227,52 @@ Introduce an intentional duplicate or FK violation.
 Run the script.
 
 Expected Result: Error is printed, but script does not crash.
+
+
+## Business Analysis Queries
+
+### 1. Top 10 Industries by Company Count
+```
+SELECT industry, COUNT(*) AS company_count
+FROM company_websites
+GROUP BY industry
+ORDER BY company_count DESC
+LIMIT 10;
+```
+Business Insight: Identify which industries have the highest web presence.
+
+### 2. Match Success Rate
+```
+SELECT
+    COUNT(*) FILTER (WHERE cm.id IS NOT NULL) * 100.0 / COUNT(*) AS match_success_percentage
+FROM company_websites cw
+LEFT JOIN company_match cm ON cw.id = cm.website_id;
+```
+Business Insight: Understand the overall quality and coverage of fuzzy matches.
+
+### 3. Average Match Score by Industry
+```
+SELECT cw.industry, ROUND(AVG(cm.match_score), 2) AS avg_score, COUNT(*) AS total_matches
+FROM company_match cm
+JOIN company_websites cw ON cm.website_id = cw.id
+GROUP BY cw.industry
+ORDER BY avg_score DESC;
+```
+Business Insight: Identify which industries have more accurate matches (higher average match scores).
+
+### 4. Unmatched Companies
+```
+SELECT id, company_name
+FROM company_websites
+WHERE id NOT IN (SELECT website_id FROM company_match);
+```
+Business Insight: List companies without a valid ABR match — useful for manual review or data improvement.
+
+### 5. State-Wise Registered Businesses from ABR
+```
+SELECT state, COUNT(*) AS total_businesses
+FROM abr_data
+GROUP BY state
+ORDER BY total_businesses DESC;
+```
+Business Insight: Understand business density across Australian states or regions.
