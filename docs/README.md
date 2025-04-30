@@ -160,3 +160,70 @@ FROM {{ ref('company_match') }} cm
 JOIN {{ ref('cleaned_abr_data') }} a ON cm.abr_id = a.id
 JOIN {{ ref('cleaned_websites') }} w ON cm.website_id = w.id
 WHERE cm.match_score > 80;
+
+
+
+## Validated test cases
+
+## Section 1: Data Read from PostgreSQL
+### Test Case 1.1: Validate Data Read from company_websites
+Objective: Ensure company_df loads valid data from company_websites table.
+
+Steps:
+Connect to the PostgreSQL database.
+Run the query: SELECT id, company_name FROM company_websites.
+
+Expected Result: A DataFrame with non-null id and company_name values.
+
+### Test Case 1.2: Validate Data Read from abr_data
+Objective: Ensure abr_df loads valid data from abr_data table.
+
+Steps:
+Connect to the database.
+Run the query: SELECT id, entity_name FROM abr_data.
+
+Expected Result: A DataFrame with non-null id and entity_name.
+
+## Section 2: Fuzzy Matching Logic
+### Test Case 2.1: Match Threshold Logic
+Objective: Confirm that only matches with score ≥ 75 are included.
+
+Steps:
+Set threshold = 75.
+Match company_name with entity_name using fuzz.token_sort_ratio.
+
+Expected Result: No entries in the match list have a score < 75.
+
+### Test Case 2.2: Unique Match Validation
+Objective: Confirm that each company matches to at most one ABR entity.
+
+Steps:
+Use process.extractOne() for each company.
+
+Expected Result: One match (or none) per company record.
+
+## Section 3: Data Insertion to company_match
+Test Case 3.1: Valid Foreign Key Reference
+Objective: Ensure all abr_id and website_id exist in their respective tables.
+
+Steps:
+Attempt insert into company_match.
+
+Expected Result: No foreign key violations.
+
+### Test Case 3.2: Data Type Validation
+Objective: Ensure proper data types are used for match_score, matched_at, etc.
+
+Steps:
+Check DataFrame types before insertion.
+
+Expected Result: match_score is numeric (decimal), matched_at is timestamp.
+
+### Test Case 3.3: Insert Failure Handling
+Objective: Confirm code catches and logs insertion errors.
+
+Steps:
+Introduce an intentional duplicate or FK violation.
+Run the script.
+
+Expected Result: Error is printed, but script does not crash.
