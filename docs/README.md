@@ -160,7 +160,7 @@ FROM {{ ref('company_match') }} cm
 JOIN {{ ref('cleaned_abr_data') }} a ON cm.abr_id = a.id
 JOIN {{ ref('cleaned_websites') }} w ON cm.website_id = w.id
 WHERE cm.match_score > 80;
-
+```
 
 
 ## Validated test cases
