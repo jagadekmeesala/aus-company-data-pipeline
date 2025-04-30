@@ -163,7 +163,7 @@ WHERE cm.match_score > 80;
 ```
 
 
-## Validated test cases
+## 3. Validated test cases
 
 ## Section 1: Data Read from PostgreSQL
 ### Test Case 1.1: Validate Data Read from company_websites
